@@ -19,6 +19,7 @@ export interface Certificate {
 export interface ContactFormSubmission {
   'inquiryType' : InquiryType,
   'name' : string,
+  'submittedAt' : string,
   'email' : string,
   'message' : string,
 }
@@ -26,13 +27,40 @@ export type InquiryType = { 'support' : null } |
   { 'partnership' : null } |
   { 'feedback' : null } |
   { 'general' : null };
+export interface Review {
+  'id' : bigint,
+  'status' : ReviewStatus,
+  'courseOrProject' : string,
+  'name' : string,
+  'role' : string,
+  'submittedAt' : string,
+  'comment' : string,
+  'stars' : bigint,
+}
+export interface ReviewInput {
+  'courseOrProject' : string,
+  'name' : string,
+  'role' : string,
+  'submittedAt' : string,
+  'comment' : string,
+  'stars' : bigint,
+}
+export type ReviewStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
 export interface _SERVICE {
   'addCertificate' : ActorMethod<[Certificate], undefined>,
+  'approveReview' : ActorMethod<[bigint], undefined>,
   'getAllContactFormSubmissions' : ActorMethod<
     [],
     Array<ContactFormSubmission>
   >,
+  'getAllReviews' : ActorMethod<[], Array<Review>>,
+  'getApprovedReviews' : ActorMethod<[], Array<Review>>,
+  'getPendingReviews' : ActorMethod<[], Array<Review>>,
+  'rejectReview' : ActorMethod<[bigint], undefined>,
   'submitContactForm' : ActorMethod<[ContactFormSubmission], undefined>,
+  'submitReview' : ActorMethod<[ReviewInput], bigint>,
   'verifyCertificate' : ActorMethod<[string], Certificate>,
 }
 export declare const idlService: IDL.ServiceClass;

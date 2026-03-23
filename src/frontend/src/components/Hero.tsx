@@ -1,4 +1,4 @@
-import { ArrowRight, Sparkles, Star, Users } from "lucide-react";
+import { ArrowRight, Sparkles, Users } from "lucide-react";
 import { motion } from "motion/react";
 
 export default function Hero() {
@@ -130,11 +130,6 @@ export default function Hero() {
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-[#C04B62]" />
             <span>50+ Students Trained</span>
-          </div>
-          <div className="w-1 h-1 rounded-full bg-taupe hidden sm:block" />
-          <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 text-[#C04B62]" />
-            <span>95% Placement Rate</span>
           </div>
           <div className="w-1 h-1 rounded-full bg-taupe hidden sm:block" />
           <div className="flex items-center gap-2">

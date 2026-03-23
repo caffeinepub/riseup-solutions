@@ -23,18 +23,48 @@ export const InquiryType = IDL.Variant({
 export const ContactFormSubmission = IDL.Record({
   'inquiryType' : InquiryType,
   'name' : IDL.Text,
+  'submittedAt' : IDL.Text,
   'email' : IDL.Text,
   'message' : IDL.Text,
+});
+export const ReviewStatus = IDL.Variant({
+  'pending' : IDL.Null,
+  'approved' : IDL.Null,
+  'rejected' : IDL.Null,
+});
+export const Review = IDL.Record({
+  'id' : IDL.Nat,
+  'status' : ReviewStatus,
+  'courseOrProject' : IDL.Text,
+  'name' : IDL.Text,
+  'role' : IDL.Text,
+  'submittedAt' : IDL.Text,
+  'comment' : IDL.Text,
+  'stars' : IDL.Nat,
+});
+export const ReviewInput = IDL.Record({
+  'courseOrProject' : IDL.Text,
+  'name' : IDL.Text,
+  'role' : IDL.Text,
+  'submittedAt' : IDL.Text,
+  'comment' : IDL.Text,
+  'stars' : IDL.Nat,
 });
 
 export const idlService = IDL.Service({
   'addCertificate' : IDL.Func([Certificate], [], []),
+  'approveReview' : IDL.Func([IDL.Nat], [], []),
   'getAllContactFormSubmissions' : IDL.Func(
       [],
       [IDL.Vec(ContactFormSubmission)],
       ['query'],
     ),
+  'getAllReviews' : IDL.Func([], [IDL.Vec(Review)], ['query']),
+  'getApprovedReviews' : IDL.Func([], [IDL.Vec(Review)], ['query']),
+  'getPendingReviews' : IDL.Func([], [IDL.Vec(Review)], ['query']),
+  'rejectReview' : IDL.Func([IDL.Nat], [], []),
   'submitContactForm' : IDL.Func([ContactFormSubmission], [], []),
+  'submitReview' : IDL.Func([ReviewInput], [IDL.Nat], []),
   'verifyCertificate' : IDL.Func([IDL.Text], [Certificate], ['query']),
 });
 
@@ -56,18 +86,48 @@ export const idlFactory = ({ IDL }) => {
   const ContactFormSubmission = IDL.Record({
     'inquiryType' : InquiryType,
     'name' : IDL.Text,
+    'submittedAt' : IDL.Text,
     'email' : IDL.Text,
     'message' : IDL.Text,
+  });
+  const ReviewStatus = IDL.Variant({
+    'pending' : IDL.Null,
+    'approved' : IDL.Null,
+    'rejected' : IDL.Null,
+  });
+  const Review = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : ReviewStatus,
+    'courseOrProject' : IDL.Text,
+    'name' : IDL.Text,
+    'role' : IDL.Text,
+    'submittedAt' : IDL.Text,
+    'comment' : IDL.Text,
+    'stars' : IDL.Nat,
+  });
+  const ReviewInput = IDL.Record({
+    'courseOrProject' : IDL.Text,
+    'name' : IDL.Text,
+    'role' : IDL.Text,
+    'submittedAt' : IDL.Text,
+    'comment' : IDL.Text,
+    'stars' : IDL.Nat,
   });
   
   return IDL.Service({
     'addCertificate' : IDL.Func([Certificate], [], []),
+    'approveReview' : IDL.Func([IDL.Nat], [], []),
     'getAllContactFormSubmissions' : IDL.Func(
         [],
         [IDL.Vec(ContactFormSubmission)],
         ['query'],
       ),
+    'getAllReviews' : IDL.Func([], [IDL.Vec(Review)], ['query']),
+    'getApprovedReviews' : IDL.Func([], [IDL.Vec(Review)], ['query']),
+    'getPendingReviews' : IDL.Func([], [IDL.Vec(Review)], ['query']),
+    'rejectReview' : IDL.Func([IDL.Nat], [], []),
     'submitContactForm' : IDL.Func([ContactFormSubmission], [], []),
+    'submitReview' : IDL.Func([ReviewInput], [IDL.Nat], []),
     'verifyCertificate' : IDL.Func([IDL.Text], [Certificate], ['query']),
   });
 };

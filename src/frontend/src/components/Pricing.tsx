@@ -9,7 +9,7 @@ const inclusions = [
   "6+ real-world AI projects to deploy",
   "Verified industry certificate",
   "Student portal access (lifetime materials)",
-  "Job placement assistance",
+  "Career support & interview guidance",
   "Mock interviews & resume review",
   "WhatsApp community access",
 ];

@@ -27,7 +27,7 @@ export default function FreeDemo() {
               Free Demo Class
             </div>
             <div className="text-sm font-500 text-charcoal">
-              July 5, 2025 &middot; 11:00 AM IST
+              April 5, 2026 &middot; 11:00 AM IST
             </div>
           </div>
         </div>

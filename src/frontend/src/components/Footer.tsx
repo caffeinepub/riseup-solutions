@@ -14,7 +14,6 @@ const navLinks = [
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const utmLink = `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`;
 
   return (
     <footer className="bg-[#1C1B1A] text-[#C8B8B4]">
@@ -121,22 +120,14 @@ export default function Footer() {
               <p className="text-xs text-[#8A7E7C] uppercase tracking-wide mb-2">
                 Free Demo Class
               </p>
-              <p className="text-sm text-white font-500">July 5, 2025</p>
+              <p className="text-sm text-white font-500">April 5, 2026</p>
               <p className="text-sm text-[#C8B8B4]">11:00 AM IST</p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-[#C04B62]/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8A7E7C]">
+        <div className="border-t border-[#C04B62]/20 pt-8 flex items-center justify-center text-xs text-[#8A7E7C]">
           <p>© {year} RiseUp Solutions. All rights reserved.</p>
-          <a
-            href={utmLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#C8B8B4] transition-colors"
-          >
-            Built with ❤️ using caffeine.ai
-          </a>
         </div>
       </div>
     </footer>

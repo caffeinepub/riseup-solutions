@@ -92,6 +92,7 @@ export class ExternalBlob {
 export interface ContactFormSubmission {
     inquiryType: InquiryType;
     name: string;
+    submittedAt: string;
     email: string;
     message: string;
 }
@@ -101,19 +102,48 @@ export interface Certificate {
     courseName: string;
     certificateCode: string;
 }
+export interface ReviewInput {
+    courseOrProject: string;
+    name: string;
+    role: string;
+    submittedAt: string;
+    comment: string;
+    stars: bigint;
+}
+export interface Review {
+    id: bigint;
+    status: ReviewStatus;
+    courseOrProject: string;
+    name: string;
+    role: string;
+    submittedAt: string;
+    comment: string;
+    stars: bigint;
+}
 export enum InquiryType {
     support = "support",
     partnership = "partnership",
     feedback = "feedback",
     general = "general"
 }
+export enum ReviewStatus {
+    pending = "pending",
+    approved = "approved",
+    rejected = "rejected"
+}
 export interface backendInterface {
     addCertificate(certificate: Certificate): Promise<void>;
+    approveReview(id: bigint): Promise<void>;
     getAllContactFormSubmissions(): Promise<Array<ContactFormSubmission>>;
+    getAllReviews(): Promise<Array<Review>>;
+    getApprovedReviews(): Promise<Array<Review>>;
+    getPendingReviews(): Promise<Array<Review>>;
+    rejectReview(id: bigint): Promise<void>;
     submitContactForm(submission: ContactFormSubmission): Promise<void>;
+    submitReview(review: ReviewInput): Promise<bigint>;
     verifyCertificate(code: string): Promise<Certificate>;
 }
-import type { ContactFormSubmission as _ContactFormSubmission, InquiryType as _InquiryType } from "./declarations/backend.did.d.ts";
+import type { ContactFormSubmission as _ContactFormSubmission, InquiryType as _InquiryType, Review as _Review, ReviewStatus as _ReviewStatus } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async addCertificate(arg0: Certificate): Promise<void> {
@@ -127,6 +157,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.addCertificate(arg0);
+            return result;
+        }
+    }
+    async approveReview(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.approveReview(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.approveReview(arg0);
             return result;
         }
     }
@@ -144,17 +188,87 @@ export class Backend implements backendInterface {
             return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
         }
     }
-    async submitContactForm(arg0: ContactFormSubmission): Promise<void> {
+    async getAllReviews(): Promise<Array<Review>> {
         if (this.processError) {
             try {
-                const result = await this.actor.submitContactForm(to_candid_ContactFormSubmission_n6(this._uploadFile, this._downloadFile, arg0));
+                const result = await this.actor.getAllReviews();
+                return from_candid_vec_n6(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllReviews();
+            return from_candid_vec_n6(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getApprovedReviews(): Promise<Array<Review>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getApprovedReviews();
+                return from_candid_vec_n6(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getApprovedReviews();
+            return from_candid_vec_n6(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getPendingReviews(): Promise<Array<Review>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPendingReviews();
+                return from_candid_vec_n6(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPendingReviews();
+            return from_candid_vec_n6(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async rejectReview(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.rejectReview(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.submitContactForm(to_candid_ContactFormSubmission_n6(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.rejectReview(arg0);
+            return result;
+        }
+    }
+    async submitContactForm(arg0: ContactFormSubmission): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.submitContactForm(to_candid_ContactFormSubmission_n11(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.submitContactForm(to_candid_ContactFormSubmission_n11(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async submitReview(arg0: ReviewInput): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.submitReview(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.submitReview(arg0);
             return result;
         }
     }
@@ -179,23 +293,71 @@ function from_candid_ContactFormSubmission_n2(_uploadFile: (file: ExternalBlob) 
 function from_candid_InquiryType_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _InquiryType): InquiryType {
     return from_candid_variant_n5(_uploadFile, _downloadFile, value);
 }
+function from_candid_ReviewStatus_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ReviewStatus): ReviewStatus {
+    return from_candid_variant_n10(_uploadFile, _downloadFile, value);
+}
+function from_candid_Review_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Review): Review {
+    return from_candid_record_n8(_uploadFile, _downloadFile, value);
+}
 function from_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     inquiryType: _InquiryType;
     name: string;
+    submittedAt: string;
     email: string;
     message: string;
 }): {
     inquiryType: InquiryType;
     name: string;
+    submittedAt: string;
     email: string;
     message: string;
 } {
     return {
         inquiryType: from_candid_InquiryType_n4(_uploadFile, _downloadFile, value.inquiryType),
         name: value.name,
+        submittedAt: value.submittedAt,
         email: value.email,
         message: value.message
     };
+}
+function from_candid_record_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: bigint;
+    status: _ReviewStatus;
+    courseOrProject: string;
+    name: string;
+    role: string;
+    submittedAt: string;
+    comment: string;
+    stars: bigint;
+}): {
+    id: bigint;
+    status: ReviewStatus;
+    courseOrProject: string;
+    name: string;
+    role: string;
+    submittedAt: string;
+    comment: string;
+    stars: bigint;
+} {
+    return {
+        id: value.id,
+        status: from_candid_ReviewStatus_n9(_uploadFile, _downloadFile, value.status),
+        courseOrProject: value.courseOrProject,
+        name: value.name,
+        role: value.role,
+        submittedAt: value.submittedAt,
+        comment: value.comment,
+        stars: value.stars
+    };
+}
+function from_candid_variant_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    pending: null;
+} | {
+    approved: null;
+} | {
+    rejected: null;
+}): ReviewStatus {
+    return "pending" in value ? ReviewStatus.pending : "approved" in value ? ReviewStatus.approved : "rejected" in value ? ReviewStatus.rejected : value;
 }
 function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     support: null;
@@ -211,31 +373,37 @@ function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uin
 function from_candid_vec_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_ContactFormSubmission>): Array<ContactFormSubmission> {
     return value.map((x)=>from_candid_ContactFormSubmission_n2(_uploadFile, _downloadFile, x));
 }
-function to_candid_ContactFormSubmission_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ContactFormSubmission): _ContactFormSubmission {
-    return to_candid_record_n7(_uploadFile, _downloadFile, value);
+function from_candid_vec_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Review>): Array<Review> {
+    return value.map((x)=>from_candid_Review_n7(_uploadFile, _downloadFile, x));
 }
-function to_candid_InquiryType_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: InquiryType): _InquiryType {
-    return to_candid_variant_n9(_uploadFile, _downloadFile, value);
+function to_candid_ContactFormSubmission_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ContactFormSubmission): _ContactFormSubmission {
+    return to_candid_record_n12(_uploadFile, _downloadFile, value);
 }
-function to_candid_record_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_InquiryType_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: InquiryType): _InquiryType {
+    return to_candid_variant_n14(_uploadFile, _downloadFile, value);
+}
+function to_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     inquiryType: InquiryType;
     name: string;
+    submittedAt: string;
     email: string;
     message: string;
 }): {
     inquiryType: _InquiryType;
     name: string;
+    submittedAt: string;
     email: string;
     message: string;
 } {
     return {
-        inquiryType: to_candid_InquiryType_n8(_uploadFile, _downloadFile, value.inquiryType),
+        inquiryType: to_candid_InquiryType_n13(_uploadFile, _downloadFile, value.inquiryType),
         name: value.name,
+        submittedAt: value.submittedAt,
         email: value.email,
         message: value.message
     };
 }
-function to_candid_variant_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: InquiryType): {
+function to_candid_variant_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: InquiryType): {
     support: null;
 } | {
     partnership: null;

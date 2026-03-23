@@ -66,7 +66,7 @@ const weeks = [
       "Technical interview mock sessions",
       "Coding challenges (LeetCode-style)",
       "Salary negotiation & career strategy",
-      "Certificate issuance & job placement support",
+      "Certificate issuance & career readiness",
     ],
   },
 ];

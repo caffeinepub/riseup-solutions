@@ -1,4 +1,4 @@
-import { Target, TrendingUp, Users } from "lucide-react";
+import { Briefcase, Target, Users } from "lucide-react";
 import { motion } from "motion/react";
 
 const stats = [
@@ -9,16 +9,16 @@ const stats = [
     desc: "Hands-on learners building real projects",
   },
   {
-    icon: TrendingUp,
+    icon: Briefcase,
     value: "10+",
     label: "Business Clients",
     desc: "Enterprises trusting our BPO & IT solutions",
   },
   {
     icon: Target,
-    value: "95%",
-    label: "Placement Rate",
-    desc: "Graduates hired within 3 months",
+    value: "6+",
+    label: "Real-World Projects",
+    desc: "Deployed by students during the bootcamp",
   },
 ];
 

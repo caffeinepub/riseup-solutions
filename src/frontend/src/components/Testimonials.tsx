@@ -1,10 +1,10 @@
 import { Quote, Star } from "lucide-react";
 import { motion } from "motion/react";
+import { useGetApprovedReviews } from "../hooks/useQueries";
 
 const testimonials = [
   {
     name: "Kavya Nair",
-    role: "Data Analyst @ TCS",
     initials: "KN",
     stars: 5,
     quote:
@@ -12,7 +12,6 @@ const testimonials = [
   },
   {
     name: "Saurabh Mehta",
-    role: "ML Engineer @ Startup",
     initials: "SM",
     stars: 5,
     quote:
@@ -20,7 +19,6 @@ const testimonials = [
   },
   {
     name: "Deepika Rao",
-    role: "CEO, RetailTech Co.",
     initials: "DR",
     stars: 5,
     quote:
@@ -28,7 +26,6 @@ const testimonials = [
   },
   {
     name: "Arjun Verma",
-    role: "AI Developer @ FinTech",
     initials: "AV",
     stars: 5,
     quote:
@@ -36,9 +33,19 @@ const testimonials = [
   },
 ];
 
-const STAR_RATINGS = [0, 1, 2, 3, 4];
+function StarRow({ count }: { count: number }) {
+  return (
+    <div className="flex gap-1 mb-4">
+      {Array.from({ length: count }, (_, i) => i).map((i) => (
+        <Star key={i + 1} className="w-4 h-4 text-[#C04B62]" fill="#C04B62" />
+      ))}
+    </div>
+  );
+}
 
 export default function Testimonials() {
+  const { data: approvedReviews } = useGetApprovedReviews();
+
   return (
     <section id="testimonials" className="section-pad">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -72,15 +79,7 @@ export default function Testimonials() {
                 className="absolute top-6 right-6 w-10 h-10 text-[#F0E8E6]"
                 fill="currentColor"
               />
-              <div className="flex gap-1 mb-4">
-                {STAR_RATINGS.slice(0, t.stars).map((s) => (
-                  <Star
-                    key={s}
-                    className="w-4 h-4 text-[#C04B62]"
-                    fill="#C04B62"
-                  />
-                ))}
-              </div>
+              <StarRow count={t.stars} />
               <p className="text-charcoal leading-relaxed mb-6 text-sm">
                 "{t.quote}"
               </p>
@@ -95,11 +94,60 @@ export default function Testimonials() {
                 </div>
                 <div>
                   <div className="font-600 text-charcoal text-sm">{t.name}</div>
-                  <div className="text-taupe text-xs">{t.role}</div>
                 </div>
               </div>
             </motion.div>
           ))}
+
+          {approvedReviews?.map((review, i) => {
+            const starCount = Number(review.stars);
+            const initials = review.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()
+              .slice(0, 2);
+            return (
+              <motion.div
+                key={String(review.id)}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: (testimonials.length + i) * 0.1 }}
+                className="card-white p-8 relative"
+                data-ocid={`testimonials.item.${testimonials.length + i + 1}`}
+              >
+                <Quote
+                  className="absolute top-6 right-6 w-10 h-10 text-[#F0E8E6]"
+                  fill="currentColor"
+                />
+                <StarRow count={starCount} />
+                <p className="text-charcoal leading-relaxed mb-6 text-sm">
+                  "{review.comment}"
+                </p>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-700"
+                    style={{
+                      background: "linear-gradient(135deg, #E87272, #C04B62)",
+                    }}
+                  >
+                    {initials}
+                  </div>
+                  <div>
+                    <div className="font-600 text-charcoal text-sm">
+                      {review.name}
+                    </div>
+                    {review.courseOrProject && (
+                      <div className="text-xs text-[#8A7E7C]">
+                        {review.courseOrProject}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

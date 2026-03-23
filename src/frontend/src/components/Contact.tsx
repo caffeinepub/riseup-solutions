@@ -12,11 +12,29 @@ export default function Contact() {
     message: "",
     inquiryType: InquiryType.general,
   });
-  const { mutate, isPending, isSuccess } = useSubmitContactForm();
+  const { mutate, isPending, isSuccess, isActorReady } = useSubmitContactForm();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutate(form, {
+    if (!isActorReady) {
+      toast.error(
+        "Still connecting to the server. Please wait a moment and try again.",
+      );
+      return;
+    }
+    const submission = {
+      ...form,
+      submittedAt: new Date().toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    };
+    mutate(submission, {
       onSuccess: () => {
         toast.success("Message sent! We'll get back to you within 24 hours.");
         setForm({
@@ -26,13 +44,16 @@ export default function Contact() {
           inquiryType: InquiryType.general,
         });
       },
-      onError: () => {
+      onError: (err) => {
+        console.error("Contact form error:", err);
         toast.error(
-          "Something went wrong. Please try again or email us directly.",
+          "Something went wrong. Please try again or email us directly at riseupsolutions@zohomail.in",
         );
       },
     });
   };
+
+  const isDisabled = isPending || !isActorReady;
 
   return (
     <section id="contact" className="section-pad section-alt">
@@ -237,17 +258,24 @@ export default function Contact() {
               </div>
               <button
                 type="submit"
-                disabled={isPending}
+                disabled={isDisabled}
                 data-ocid="contact.submit_button"
                 className="btn-primary w-full py-4 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isPending ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" /> Sending...
+                    <Loader2 className="w-4 h-4 animate-spin inline mr-2" />{" "}
+                    Sending...
                   </>
                 ) : isSuccess ? (
                   <>
-                    <CheckCircle className="w-4 h-4" /> Message Sent!
+                    <CheckCircle className="w-4 h-4 inline mr-2" /> Message
+                    Sent!
+                  </>
+                ) : !isActorReady ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin inline mr-2" />{" "}
+                    Connecting...
                   </>
                 ) : (
                   "Send Message"
