@@ -3,6 +3,17 @@ import { useRef } from "react";
 import type { Certificate, ContactFormSubmission, Review } from "../backend";
 import { useActor } from "./useActor";
 
+export interface Internship {
+  id: bigint;
+  title: string;
+  description: string;
+  duration: string;
+  stipend: string;
+  domain: string;
+  applyLink: string;
+  postedAt: string;
+}
+
 export function useVerifyCertificate() {
   const { actor } = useActor();
   const actorRef = useRef(actor);
@@ -60,6 +71,20 @@ export function useGetPendingReviews() {
     queryFn: async () => {
       if (!actor) return [];
       return actor.getPendingReviews();
+    },
+    enabled: !!actor,
+  });
+}
+
+export function useGetAllInternships() {
+  const { actor } = useActor();
+  return useQuery<Internship[], Error>({
+    queryKey: ["internships"],
+    queryFn: async () => {
+      if (!actor) return [];
+      const a = actor as any;
+      if (typeof a.getAllInternships !== "function") return [];
+      return a.getAllInternships();
     },
     enabled: !!actor,
   });

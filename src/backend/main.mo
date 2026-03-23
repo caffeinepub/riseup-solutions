@@ -3,11 +3,11 @@ import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
 import Iter "mo:core/Iter";
 import Nat "mo:core/Nat";
-import Migration "migration";
+
 import List "mo:core/List";
 import Order "mo:core/Order";
 
-(with migration = Migration.run)
+
 actor {
   type Certificate = {
     name : Text;
@@ -24,8 +24,6 @@ actor {
 
   let certificates = Map.empty<Text, Certificate>();
 
-  // Legacy type kept for stable variable compatibility on upgrade.
-  // Do not remove — Motoko requires the old type to remain for safe upgrades.
   type ContactFormSubmissionV1 = {
     name : Text;
     email : Text;
@@ -54,10 +52,7 @@ actor {
     };
   };
 
-  // Legacy stable var — preserved with original type so upgrade succeeds.
   let contactSubmissions = Map.empty<Text, ContactFormSubmissionV1>();
-
-  // New stable var with submittedAt field.
   let contactSubmissionsV2 = Map.empty<Text, ContactFormSubmission>();
 
   // Review System
@@ -98,6 +93,37 @@ actor {
   var submissionCounter : Nat = 0;
   var reviewCounter = 0;
 
+  // Internship System
+  public type Internship = {
+    id : Nat;
+    title : Text;
+    description : Text;
+    duration : Text;
+    stipend : Text;
+    domain : Text;
+    applyLink : Text;
+    postedAt : Text;
+  };
+
+  public type InternshipInput = {
+    title : Text;
+    description : Text;
+    duration : Text;
+    stipend : Text;
+    domain : Text;
+    applyLink : Text;
+    postedAt : Text;
+  };
+
+  module Internship {
+    public func compare(i1 : Internship, i2 : Internship) : Order.Order {
+      Nat.compare(i1.id, i2.id);
+    };
+  };
+
+  let internships = Map.empty<Nat, Internship>();
+  var internshipCounter : Nat = 0;
+
   public shared func addCertificate(certificate : Certificate) : async () {
     certificates.remove(certificate.certificateCode);
     certificates.add(certificate.certificateCode, certificate);
@@ -120,7 +146,6 @@ actor {
     contactSubmissionsV2.values().toArray().sort();
   };
 
-  // Submit a new review (always pending)
   public shared ({ caller }) func submitReview(review : ReviewInput) : async Nat {
     if (review.stars < 1 or review.stars > 5) {
       Runtime.trap("Stars must be between 1 and 5");
@@ -140,7 +165,6 @@ actor {
     reviewCounter;
   };
 
-  // Approve a review (admin)
   public shared ({ caller }) func approveReview(id : Nat) : async () {
     switch (reviews.get(id)) {
       case (null) { Runtime.trap("Review not found") };
@@ -151,7 +175,6 @@ actor {
     };
   };
 
-  // Reject a review (admin)
   public shared ({ caller }) func rejectReview(id : Nat) : async () {
     switch (reviews.get(id)) {
       case (null) { Runtime.trap("Review not found") };
@@ -162,7 +185,6 @@ actor {
     };
   };
 
-  // Get all approved reviews (public)
   public query ({ caller }) func getApprovedReviews() : async [Review] {
     reviews.values().toArray().filter(
       func(r) {
@@ -174,7 +196,6 @@ actor {
     ).sort();
   };
 
-  // Get all pending reviews (admin)
   public query ({ caller }) func getPendingReviews() : async [Review] {
     reviews.values().toArray().filter(
       func(r) {
@@ -186,9 +207,35 @@ actor {
     ).sort();
   };
 
-  // Get all reviews regardless of status (admin)
   public query ({ caller }) func getAllReviews() : async [Review] {
     reviews.values().toArray().sort();
   };
-};
 
+  // Internship CRUD
+  public shared func addInternship(input : InternshipInput) : async Nat {
+    internshipCounter += 1;
+    let newInternship : Internship = {
+      id = internshipCounter;
+      title = input.title;
+      description = input.description;
+      duration = input.duration;
+      stipend = input.stipend;
+      domain = input.domain;
+      applyLink = input.applyLink;
+      postedAt = input.postedAt;
+    };
+    internships.add(internshipCounter, newInternship);
+    internshipCounter;
+  };
+
+  public shared func deleteInternship(id : Nat) : async () {
+    switch (internships.get(id)) {
+      case (null) { Runtime.trap("Internship not found") };
+      case (?_) { internships.remove(id) };
+    };
+  };
+
+  public query func getAllInternships() : async [Internship] {
+    internships.values().toArray().sort();
+  };
+};

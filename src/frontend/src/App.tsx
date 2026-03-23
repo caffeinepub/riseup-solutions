@@ -13,6 +13,7 @@ import FreeDemo from "./components/FreeDemo";
 import Hero from "./components/Hero";
 import HowItWorks from "./components/HowItWorks";
 import Instructor from "./components/Instructor";
+import Internships from "./components/Internships";
 import Navbar from "./components/Navbar";
 import Pricing from "./components/Pricing";
 import Programs from "./components/Programs";
@@ -36,6 +37,7 @@ export default function App() {
         <Hero />
         <About />
         <Programs />
+        <Internships />
         <HowItWorks />
         <Curriculum />
         <Instructor />
